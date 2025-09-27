@@ -1,78 +1,81 @@
-# MATLAB ile Geliştirilmiş 2D Uçuş Simülatörü v1.0
+# 2D Flight Simulator in MATLAB v1.0
 
 ![Platform](https://img.shields.io/badge/Platform-MATLAB-orange)
-![Lisans](https://img.shields.io/badge/License-MIT-yellow)
-
-## Giriş: Projenin Amacı ve Felsefesi
-
-Bu proje, MATLAB ortamında geliştirilmiş, bir uçağın 2D uçuş dinamiklerini simüle eden modüler bir yazılımdır. Proje, sadece bir uçağın uçuşunu taklit etmekten daha derin bir amaçla tasarlanmıştır: Karmaşık dinamik sistemlerin **kapalı çevrim kontrolü (closed-loop control)** prensiplerini keşfetmek için modüler ve analize dayalı bir **"sanal laboratuvar" (sandbox)** ortamı yaratmak.
-
-Bu felsefe doğrultusunda, uçağın kendisi fotogerçekçi bir model olarak değil, 2D nokta kütleli bir sistem olarak soyutlanmıştır. Bu sayede tüm odak, uçağın kendisinden ziyade, onu kontrol etmeye çalışan **PID (Oransal-İntegral-Türevsel) kontrollü otopilotun davranışına** çevrilmiştir. Simülasyonun asıl amacı, bu üç temel kontrol kuvveti (`Kp`, `Ki`, `Kd`) arasındaki mükemmel dengeyi bulma sanatını ve mühendisliğini veri odaklı bir yaklaşımla keşfetmektir.
-
-Bu ilk sürüm (**v1.0**), temel simülasyon altyapısını ve **Hafif Eğitim Uçağı** profilini içermektedir.
-
----
-
-## Simülasyon Çıktısı
-
-Aşağıda, Hafif Eğitim Uçağı için hedeflenen irtifaya minimum salınımla oturan, başarılı bir otopilot ayarının sonuç paneli görülmektedir.
-
-<img width="988" height="613" alt="Manuel Uçuş Örnek Sonuçlar" src="https://github.com/user-attachments/assets/dd4d23b7-afc4-4478-a0e8-cbc2a442ab04" />
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
 
-<img width="984" height="624" alt="İrtifa Sabitleme Örnek Sonuçlar" src="https://github.com/user-attachments/assets/fa2b4296-5ed2-411e-8f85-142bfbc86e9d" />
+## Introduction: Project Goal and Philosophy
 
+This project is a modular software developed in the MATLAB environment to simulate the 2D flight dynamics of an aircraft. It was designed with a deeper purpose than simply mimicking flight: to create a modular, analysis-driven **"virtual laboratory" (sandbox)** for exploring the principles of **closed-loop control** in complex dynamic systems.
+
+In line with this philosophy, the aircraft itself is abstracted as a 2D point-mass system rather than a photorealistic model. This intentional simplification shifts the focus from the aircraft itself to the behavior of the **PID (Proportional-Integral-Derivative) controlled autopilot** that attempts to command it. The core objective of the simulation is to explore the art and engineering of finding the perfect balance between the three fundamental control forces (`Kp`, `Ki`, `Kd`) through a data-driven approach.
+
+This initial release (**v1.0**) includes the core simulation infrastructure and the **Light Training Aircraft** profile.
 
 ---
 
-## Gelişme: Proje Mimarisi ve Teknik Detaylar
+## Simulation Output
 
-Proje, her biri net bir sorumluluğa sahip olan (Single Responsibility Principle) modüler `.m` dosyaları kullanılarak yapılandırılmıştır. Bu mimari, kodun okunabilirliğini, bakımını ve gelecekteki genişletilebilirliğini artırmaktadır.
+Below is the results panel from a successful autopilot configuration for the Light Training Aircraft, demonstrating a stable capture of the target altitude with minimal oscillation.
 
-### Modül Sorumlulukları
+*(It is highly recommended to add screenshots of your best-running simulation results here.)*
 
-- `ucus_simulasyon.m`: **Ana Kontrol ve Simülasyon Yöneticisi (Main Controller & Simulation Manager)**
-  - Programın ana giriş noktasıdır. Kullanıcı menüsünü sunar, simülasyon senaryosunu ayarlar ve MATLAB'in `ode45` diferansiyel denklem çözücüsünü çağırarak simülasyonu başlatır. Simülasyon sonrası veri işleme (post-processing) ve loglama işlemlerini yürüterek sonuçları görselleştirme modülüne aktarır.
+**Manual Flight (Open-Loop) Example:**
+<img width="988" height="613" alt="Manual Flight Example Results" src="https://github.com/user-attachments/assets/dd4d23b7-afc4-4478-a0e8-cbc2a442ab04" />
 
-- `ucus_denklemleri.m`: **Dinamik Model ve Kontrol Mantığı (Dynamic Model & Control Logic)**
-  - Simülasyonun her zaman adımında çağrılan temel fonksiyondur. Uçağın 2D nokta kütleli hareket denklemlerini (Equations of Motion) içerir. Aerodinamik kuvvetleri (Kaldırma, Sürükleme), itkiyi ve yerçekimini hesaplayarak durum vektörünün türevlerini (`dydt`) döndürür. Otopilot modu için kapalı çevrim PID kontrol mantığını barındırır.
-
-- `initialize_parameters.m`: **Yapılandırma ve Parametre Yönetimi (Configuration & Parameter Management)**
-  - Tüm simülasyon parametrelerinin merkezi olarak tanımlandığı modüldür. Uçak fiziksel özellikleri (kütle, kanat alanı vb.), aerodinamik katsayılar ve otopilot PID kazançları (`Kp`, `Ki`, `Kd`) bu dosyada yapılandırılır. Projenin esnekliğinin ve ayarlanabilirliğinin temelini oluşturur.
-
-- `plot_results.m`: **Veri Görselleştirme Modülü (Data Visualization Module)**
-  - Simülasyon yöneticisinden gelen işlenmiş zaman serisi verilerini alır ve kullanıcıya anlamlı grafikler halinde sunar. Bu panel, otopilotun performansını (overshoot, oturma süresi, salınım) analiz etmek ve bir sonraki iterasyon için bilinçli kararlar vermek amacıyla kullanılan temel geri bildirim (feedback) aracıdır.
-
-- `hesapla_isa_yogulugu.m` & `olay_fabrikasi.m`: **Yardımcı ve Güvenlik Modülleri**
-  - Bu yardımcı fonksiyonlar, sırasıyla, Uluslararası Standart Atmosfer (ISA) modeline göre anlık hava yoğunluğunu hesaplar ve uçağın yere çarpması gibi olayları tespit ederek simülasyonu güvenli bir şekilde sonlandırır.
-
-### Mevcut Sürümün Kontrol Stratejisi (v1.0)
-
-Bu ilk sürümde, irtifayı kontrol etmek için bilinçli olarak basit bir strateji seçilmiştir: **"İrtifa için Gücü Ayarla" (Power for Altitude).** Otopilot, irtifa hatasını düzeltmek için sadece motor gücünü (gaz kolunu) ayarlar. Bu yaklaşım, PID kontrolünün temellerini anlamak için ideal bir başlangıç noktasıdır, ancak projenin ilerleyen versiyonlarında daha gelişmiş stratejilerle değiştirilmesi planlanmaktadır.
+**Altitude Hold (Closed-Loop) Example:**
+<img width="984" height="624" alt="Altitude Hold Example Results" src="https://github.com/user-attachments/assets/fa2b4296-5ed2-411e-8f85-142bfbc86e9d" />
 
 ---
 
-## Sonuç: Kurulum, Kullanım ve Gelecek Planları
+## Development: Project Architecture and Technical Details
 
-### Kurulum ve Kullanım
+The project is structured using modular `.m` files, each adhering to the Single Responsibility Principle. This architecture enhances the code's readability, maintainability, and future extensibility.
 
-1.  Bu depodaki tüm `.m` dosyalarını bilgisayarınızda tek bir klasöre indirin.
-2.  MATLAB programını açın ve bu klasörü "Current Folder" olarak ayarlayın.
-3.  MATLAB komut satırına `ucus_simulasyon` yazıp Enter'a basarak simülatörü başlatın.
-4.  Ekrana gelen menüden istediğiniz uçuş senaryosunu ve başlangıç koşullarını seçin.
+### Module Responsibilities
 
-### Yol Haritası (Roadmap)
+- `ucus_simulasyon.m`: **Main Controller & Simulation Manager**
+  - This is the main entry point of the program. It provides the user menu, sets up the simulation scenario, and triggers the simulation by calling MATLAB's `ode45` differential equation solver. It also handles post-processing and logging, passing the final data to the visualization module.
 
-Bu proje aktif olarak geliştirilmektedir. Gelecek sürümler için planlanan özellikler ve iyileştirmeler:
+- `ucus_denklemleri.m`: **Dynamic Model & Control Logic**
+  - This is the core function called by `ode45` at each time step. It contains the 2D point-mass Equations of Motion for the aircraft. It calculates aerodynamic forces (Lift, Drag), thrust, and gravity to return the derivatives of the state vector (`dydt`). For autopilot mode, it houses the closed-loop PID control logic.
 
-- [ ] **Yeni Uçak Profilleri:**
-    - [ ] İş Jeti (Cessna Citation Benzeri)
-    - [ ] KAAN (MMU) 5. Nesil Savaş Uçağı
-- [ ] **Gelişmiş Kontrol Stratejileri:**
-    - [ ] "İrtifa için Burnunu Ayarla, Hız için Gücü Ayarla" (Pitch for Altitude, Power for Speed) felsefesine geçiş.
-- [ ] **Grafiksel Kullanıcı Arayüzü (GUI):**
-    - [ ] MATLAB App Designer kullanılarak daha kullanıcı dostu bir arayüz geliştirilmesi.
+- `initialize_parameters.m`: **Configuration & Parameter Management**
+  - This module centralizes the definition of all simulation parameters. Aircraft physical properties (mass, wing area, etc.), aerodynamic coefficients, and autopilot PID gains (`Kp`, `Ki`, `Kd`) are configured here. This forms the basis for the project's flexibility and tunability.
 
-### Lisans
+- `plot_results.m`: **Data Visualization Module**
+  - This module takes the processed time-series data from the simulation manager and presents it to the user in a meaningful dashboard. This panel is the primary feedback tool for analyzing the autopilot's performance (e.g., overshoot, settling time, oscillation) and making informed decisions for the next tuning iteration.
 
-Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakınız.
+- `hesapla_isa_yogulugu.m` & `olay_fabrikasi.m`: **Utility & Safety Modules**
+  - These helper functions, respectively, calculate the instantaneous air density based on the International Standard Atmosphere (ISA) model and create an event function to safely terminate the simulation if a condition like a ground crash is detected.
+
+### Control Strategy in the Current Version (v1.0)
+
+This initial version employs a deliberately simple control strategy: **"Power for Altitude."** The autopilot adjusts only the engine power (throttle) to correct for altitude errors. This approach serves as an ideal starting point for understanding PID control fundamentals but is planned to be replaced with more advanced strategies in future versions.
+
+---
+
+## Conclusion: Setup, Usage, and Future Plans
+
+### Setup and Usage
+
+1.  Download all `.m` files from this repository into a single folder on your computer.
+2.  Open MATLAB and set this folder as the "Current Folder".
+3.  Run the simulator by typing `ucus_simulasyon` in the MATLAB Command Window and pressing Enter.
+4.  Select the desired flight scenario and initial conditions from the menu that appears.
+
+### Roadmap
+
+This project is under active development. Planned features and improvements for future versions include:
+
+- [ ] **New Aircraft Profiles:**
+    - [ ] Business Jet (Cessna Citation-like)
+    - [ ] KAAN (MMU) 5th Generation Fighter Aircraft
+- [ ] **Advanced Control Strategies:**
+    - [ ] Transitioning to a "Pitch for Altitude, Power for Speed" control philosophy.
+- [ ] **Graphical User Interface (GUI):**
+    - [ ] Developing a more user-friendly interface using MATLAB App Designer.
+
+### License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
