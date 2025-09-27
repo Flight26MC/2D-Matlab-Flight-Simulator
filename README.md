@@ -1,4 +1,4 @@
-# 2D Flight Simulator in MATLAB v1.0
+# 2D Flight Simulator in MATLAB 
 
 ![Platform](https://img.shields.io/badge/Platform-MATLAB-orange)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
