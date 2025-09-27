@@ -28,7 +28,7 @@ Below is the results panel from a successful autopilot configuration for the Lig
 
 ---
 
-## Development: Project Architecture and Technical Details
+## Development: "Project Architecture and Technical Details"
 
 The project is structured using modular `.m` files, each adhering to the Single Responsibility Principle. This architecture enhances the code's readability, maintainability, and future extensibility.
 
